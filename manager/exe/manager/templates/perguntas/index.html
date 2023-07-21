@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+
+{% block title %}Perguntas{% endblock %}
+
+{% block header %}
+<h1 class="text-center py-2 bg-primary text-white rounded-bottom">Perguntas</h1>
+{% endblock %}
+
+{% block style %}
+<style type="text/css">
+	.table tbody tr:last-child td {
+		border-bottom: none;
+	}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<hr class="border-white">
+
+<button class="btn btn-primary" id="carregar-perguntas">Carregar Perguntas</button>
+<button class="btn btn-success" id="salvar-perguntas">Salvar Perguntas</button>
+
+<hr class="border-white">
+
+<div class="accordion" id="accordionExample">
+</div>
+
+<div hidden>
+	<form id="edit-form">
+		<div class="row">
+			<div class="col-6">
+				<div class="mb-3">
+					<label for="edit-step" class="form-label fw-bold">Etapa:</label>
+					<input type="text" class="form-control bg-light no-focus" name="edit-step" readonly>
+				</div>
+			</div>
+			<div class="col-6">
+				<div class="mb-3">
+					<label for="edit-key" class="form-label fw-bold">Chave:</label>
+					<input type="text" class="form-control bg-light no-focus" name="edit-key" readonly>
+				</div>
+			</div>
+		</div>
+		<div class="mb-3">
+			<label for="edit-question-select" class="form-label fw-bold">Perguntas:</label>
+			<select class="form-control no-focus" name="edit-question-select"></select>
+		</div>
+		<div class="mb-3">
+			<label for="edit-question" class="form-label fw-bold">Texto:</label>
+			<textarea class="form-control no-focus" name="edit-question" rows="5"></textarea>
+		</div>
+	</form>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+	var jsonData = {};
+
+	function truncateMessage(question, size=50) {
+		return question.length > size ? question.substring(0, size) + '...' : question;
+	}
+
+	function populateTable() {
+		const accordion = document.getElementById('accordionExample');
+
+		/* Variável de controle para o contador do "accordion-item" */
+		var accordionCount = 1;
+
+		if(!accordion) return
+		accordionItems = accordion.querySelectorAll('.accordion-item:not([hidden])');
+		accordionItems.forEach(function(item) {
+			item.remove();
+		});
+
+		Object.keys(jsonData).forEach((step) => {
+			/* Cria o novo "accordion-item" */
+			var accordionItem = document.createElement("div");
+			accordionItem.className = "accordion-item";
+
+			/* Cria o cabeçalho do "accordion-item" */
+			var header = document.createElement("h2");
+			header.className = "accordion-header";
+			var headingId = "heading" + (accordionCount + 1);
+			header.id = headingId;
+
+			/* Cria o botão do cabeçalho */
+			var button = document.createElement("button");
+			button.className = "accordion-button text-capitalize";
+			button.type = "button";
+			button.setAttribute("data-bs-toggle", "collapse");
+			button.setAttribute("data-bs-target", "#collapse" + (accordionCount + 1));
+			button.setAttribute("aria-expanded", (accordionCount == 1 ? "true" : ""));
+			button.setAttribute("aria-controls", "collapse" + (accordionCount + 1));
+			button.textContent = step.replace('_', ' ');
+
+			/* Adiciona o botão ao cabeçalho */
+			header.appendChild(button);
+
+			/* Cria a div de conteúdo do "accordion-item" */
+			var content = document.createElement("div");
+			content.id = "collapse" + (accordionCount + 1);
+			content.className = "accordion-collapse collapse"+(accordionCount == 1 ? " show" : "");
+			content.setAttribute("aria-labelledby", headingId);
+			content.setAttribute("data-bs-parent", "#accordionExample");
+
+			/* Cria o corpo do "accordion-item" */
+			var body = document.createElement("div");
+			body.className = "accordion-body";
+
+			/* Cria a tabela */
+			var table = document.createElement("table");
+			table.className = "table mb-0";
+
+			/* Cria o cabeçalho da tabela */
+			var thead = document.createElement("thead");
+			var tr = document.createElement("tr");
+			var th1 = document.createElement("th");
+			var th2 = document.createElement("th");
+			var th3 = document.createElement("th");
+			th1.textContent = "Chave";
+			th2.textContent = "Perguntas";
+			th3.textContent = "Ações";
+			tr.appendChild(th1);
+			tr.appendChild(th2);
+			tr.appendChild(th3);
+			thead.appendChild(tr);
+
+			/* Cria o corpo da tabela */
+			var tbody = document.createElement("tbody");
+			tbody.setAttribute("name", "table-body");
+
+			/* Adiciona o cabeçalho e o corpo à tabela */
+			table.appendChild(thead);
+			table.appendChild(tbody);
+
+			/* Adiciona a tabela ao corpo */
+			body.appendChild(table);
+
+			/* Adiciona o corpo à div de conteúdo */
+			content.appendChild(body);
+
+			/* Adiciona o cabeçalho e a div de conteúdo ao "accordion-item" */
+			accordionItem.appendChild(header);
+			accordionItem.appendChild(content);
+
+			/* Adiciona o "accordion-item" ao "accordionExample" */
+			var accordionExample = document.getElementById("accordionExample");
+			accordionExample.appendChild(accordionItem);
+
+			/* Incrementa o contador do "accordion-item" */
+			accordionCount++;
+
+			jsonData[step].forEach((value, index) => {
+				/* Adiciona uma nova linha na tabela */
+				var newRow = tbody.insertRow();
+				var cell1 = newRow.insertCell();
+				var cell2 = newRow.insertCell();
+				var cell3 = newRow.insertCell();
+				cell1.textContent = value.resposta;
+
+				msgs = []
+
+				value.perguntas.forEach((value_2, index_2) => {
+					msgs.push('<span class="text-primary">'+(index_2+1) +'º</span> '+ truncateMessage(value_2.trim(), 100))
+				})
+
+				cell2.innerHTML = msgs.join(' / ');
+
+				const editButton = document.createElement('button');
+				editButton.setAttribute('type', 'button');
+				editButton.setAttribute('class', 'btn btn-primary');
+				editButton.setAttribute('onclick', `editItem('${step}', ${index})`);
+				editButton.textContent = 'Editar';
+
+				cell3.appendChild(editButton);
+			})
+		});
+	}
+
+	function editItem(step, key) {
+		const form = document.getElementById('edit-form').parentNode.innerHTML;
+
+		Swal.fire({
+			title: 'Editar Item',
+			html: form,
+			showCancelButton: true,
+			showConfirmButton: true,
+			confirmButtonText: 'Alterar',
+			cancelButtonText: 'Cancelar',
+			confirmButtonColor: '#198754',
+			cancelButtonColor: '#d33',
+			didOpen: () => {
+				const jsonDataSelected = jsonData[step][key];
+
+				const formContainer = Swal.getHtmlContainer();
+
+				const editStepInput = formContainer.querySelector('[name=edit-step]');
+				const editKeyInput = formContainer.querySelector('[name=edit-key]');
+				const editQuestionSelect = formContainer.querySelector('[name=edit-question-select]');
+
+				editStepInput.value = step;
+				editKeyInput.value = jsonDataSelected.resposta;
+				editKeyInput.setAttribute('data-index', key);
+				editQuestionSelect.innerHTML = '';
+
+				const option = document.createElement('option');
+				option.innerHTML = '- Nova Pergunta -'
+				option.value = ''
+
+				editQuestionSelect.appendChild(option);
+
+				jsonDataSelected.perguntas.forEach((question, index) => {
+					const option = document.createElement('option');
+					option.innerHTML = question
+					option.value = index
+
+					editQuestionSelect.appendChild(option);
+				});
+
+				formContainer.querySelector('[name=edit-question-select]').addEventListener('change', (e) => {
+					const editQuestionSelect = e.target;
+					const editQuestionTextarea = formContainer.querySelector('[name=edit-question]');
+					const option = editQuestionSelect.options[editQuestionSelect.selectedIndex];
+
+					editQuestionTextarea.value = option.value ? option.innerHTML : '';
+				});
+
+				editQuestionSelect.focus();
+
+				const event = new Event('change', { bubbles: true });
+				editQuestionSelect.dispatchEvent(event);
+			},
+			preConfirm: () => {
+				return new Promise((resolve, reject) => {
+					const formContainer = Swal.getHtmlContainer();
+
+					const editQuestionSelect = formContainer.querySelector('[name=edit-question-select]');
+					const editQuestionTextarea = formContainer.querySelector('[name=edit-question]');
+
+					if (editQuestionTextarea.value === '') {
+						if(editQuestionSelect.value === '') {
+							Swal.showValidationMessage('Campo Texto não preenchido');
+							reject(new Error('Campo Texto não preenchido'));
+						}else {
+							resolve();
+						}
+					} else {
+						resolve();
+					}
+				}).catch(error => {
+					/*console.warn('Erro:', error);*/
+				});
+			}
+		}).then((value) => {
+			if (value.dismiss === Swal.DismissReason.cancel) {
+				console.log('Botão de cancelar clicado');
+			}
+
+			if (value.isConfirmed) {
+				const formContainer = Swal.getHtmlContainer();
+				const form_2 = formContainer.querySelector('form');
+
+				const editStepInput = formContainer.querySelector('[name=edit-step]');
+				const editKeyInput = formContainer.querySelector('[name=edit-key]');
+				const editQuestionSelect = formContainer.querySelector('[name=edit-question-select]');
+				const editQuestionTextarea = formContainer.querySelector('[name=edit-question]');
+
+				const step = editStepInput.value;
+				const key = editKeyInput.getAttribute('data-index');
+				const message = editQuestionSelect.value;
+				const new_message = editQuestionTextarea.value;
+
+				console.log(step, key, message, new_message);
+
+				if(editQuestionSelect.value === '') {
+					jsonData[step][key].perguntas.push(new_message);
+
+					Swal.fire('Sucesso', 'Item adicionado com sucesso!', 'success');
+				}else{
+					jsonData[step][key].perguntas[message] = new_message;
+
+					if(new_message.length) {
+						Swal.fire('Sucesso', 'Item atualizado com sucesso!', 'success');
+					}else{
+						if (message !== -1) {
+							jsonData[step][key].perguntas = jsonData[step][key].perguntas.filter(element => element !== "");
+						}
+
+						Swal.fire('Sucesso', 'Item removido com sucesso!', 'success');
+					}
+				}
+
+				populateTable();
+			}
+		});
+	}
+
+	function salvarArquivoJson() {
+		try {
+			fetch('{{ url_for("perguntas.save") }}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(jsonData)
+			})
+			.then(response => response.json())
+			.then(responseData => {
+				console.log('Resposta do servidor:', responseData);
+				if(responseData.status == 'success') {
+					Swal.fire({title:'Sucesso', icon:'success', text: responseData.message, didClose: () => {
+
+					}});
+				}else{
+					Swal.fire({title:'Falha', icon:'error', text: responseData.message});
+				}
+			}).catch(error => {
+				Swal.fire({title:'Falha ao efetuar login', icon:'error', text: error});
+			});
+		} catch (error) {
+			Swal.fire({title:'Falha ao atualizar o arquivo JSON', icon:'error', text: error});
+		}
+	}
+
+	function carregarArquivoJson(silent=false) {
+		try {
+			fetch('/static/jsons/perguntas.json')
+			.then(response => response.json())
+			.then(data => {
+				jsonData = data;
+				populateTable();
+				// if(!silent)
+				// 	Swal.fire({title:'Sucesso', icon:'success', text: 'Mensagens '+Object.keys(jsonData).length+' carregadas'});
+			})
+			.catch(error => {
+				console.error(error);
+			});
+		} catch (error) {
+			Swal.fire({title:'Falha ao atualizar o arquivo JSON', icon:'error', text: error});
+		}
+	}
+
+	document.getElementById('carregar-perguntas').addEventListener('click', function(){
+		Swal.fire({
+			title: 'Deseja carregar?',
+			text: 'Você deseja carregar as perguntas?',
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonText: 'Carregar',
+			cancelButtonText: 'Cancelar',
+			confirmButtonColor: '#198754',
+			cancelButtonColor: '#d33'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				carregarArquivoJson();
+			}
+		});
+	});
+
+	document.getElementById('salvar-perguntas').addEventListener('click', function(){
+		Swal.fire({
+			title: 'Deseja salvar?',
+			text: 'Você deseja salvar as perguntas?',
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonText: 'Salvar',
+			cancelButtonText: 'Cancelar',
+			confirmButtonColor: '#198754',
+			cancelButtonColor: '#d33'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				salvarArquivoJson();
+			}
+		});
+	});
+
+	window.addEventListener('pywebviewready', function() {
+		const Toast = Swal.mixin({
+			toast: true,
+			position: 'top-end',
+			showConfirmButton: false,
+			timer: 1000,
+			timerProgressBar: true,
+			didOpen: (toast) => {
+						// toast.addEventListener('mouseenter', Swal.stopTimer)
+						// toast.addEventListener('mouseleave', Swal.resumeTimer)
+					}
+				});
+
+		Toast.fire({
+			icon: 'success',
+			title: 'pywebview is ready'
+		});
+
+		carregarArquivoJson(true);
+		populateTable();
+	});
+
+	window.addEventListener('load', function() {
+		const Toast = Swal.mixin({
+			toast: true,
+			position: 'top-end',
+			showConfirmButton: false,
+			timer: 1000,
+			timerProgressBar: true,
+			didOpen: (toast) => {
+						// toast.addEventListener('mouseenter', Swal.stopTimer)
+						// toast.addEventListener('mouseleave', Swal.resumeTimer)
+					}
+				});
+
+		Toast.fire({
+			icon: 'success',
+			title: 'load is ready'
+		});
+
+		carregarArquivoJson(true);
+		populateTable();
+	});
+</script>
+{% endblock %}

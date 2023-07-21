@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{% block title %}{% endblock %} - {{ config.APP_NAME }}</title>
+	<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+	{% block style %}{% endblock %}
+</head>
+<body>
+	{% if g.user %}
+	<nav class="navbar fixed-bottom navbar-expand-md navbar-dark bg-primary">
+		<div class="container">
+			<a class="navbar-brand" href="javascript:void(0)">{{ config.APP_NAME }}</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav me-auto mb-2 mb-md-0">
+					<li class="nav-item">
+						<a class="nav-link" aria-current="page" href="{{ url_for('index') }}">Inicio</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" aria-current="page" href="{{ url_for('perguntas.index') }}">Perguntas</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" aria-current="page" href="{{ url_for('respostas.index') }}">Respostas</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" aria-current="page" href="{{ url_for('loja.index') }}">Loja</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" href="#" onclick="logout()">Logout</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<div class="modal fade" id="accountInfo" data-bs-keyboard="true" tabindex="-1" aria-labelledby="accountInfoLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5" id="accountInfoLabel">Informações da Conta</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					{% if g.user['email'] %}
+					<span class="d-block"><strong>E-mail:</strong> {{ g.user['email'] }}</span>
+					{% endif %}
+
+					{% if g.user['plano'] %}
+						<span class="d-block"><strong>Plano:</strong> {{ g.user['plano']['nome'] }}</span>
+					{% endif %}
+
+					{% if g.user['plano_expire'] %}
+						<span class="d-block"><strong>Plano Expira em:</strong> {{ g.user['plano_expire'] }}</span>
+					{% endif %}
+
+					{% for emp in g.user['empresas'] %}
+						<span class="d-block"><strong>Empresa:</strong> <a href="{{ emp['link'] }}" target="_blank">{{ emp['nome_fantasia'] }}</a></span>
+					{% endfor %}
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Fechar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
+
+	<section class="container">
+		<header>
+			{% block header %}{% endblock %}
+			{% if g.user %}
+			<div class="py-1 px-2 bg-primary text-white rounded small">
+				Logado como: {{ g.user['nome'] }}
+				<span class="btn btn-light px-1 py-0 pb-1 float-end shadow" data-bs-toggle="modal" data-bs-target="#accountInfo"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-vcard" viewBox="0 0 16 16">
+					<path d="M5 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm4-2.5a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5ZM9 8a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4A.5.5 0 0 1 9 8Zm1 2.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5Z"/>
+					<path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H2ZM1 4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H8.96c.026-.163.04-.33.04-.5C9 10.567 7.21 9 5 9c-2.086 0-3.8 1.398-3.984 3.181A1.006 1.006 0 0 1 1 12V4Z"/>
+				</svg></span>
+			</div>
+			{% endif %}
+		</header>
+
+		{% for message in get_flashed_messages() %}
+		<div class="flash">{{ message }}</div>
+		{% endfor %}
+
+		{% block content %}{% endblock %}
+	</section>
+
+	<footer style="height: 64px;"></footer>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdn.jsdelivr.net/npm/inputmask@5.0.8/dist/jquery.inputmask.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="{{ url_for('static', filename='js/utilidades.js') }}"></script>
+
+	<script type="text/javascript">
+
+		function logout(silent=false) {
+			const url = "{{ url_for('auth.logout') }}";
+
+			if(!silent) {
+				Swal.fire({
+					title: 'Deseja deslogar?',
+					text: 'Você deseja sair da sua conta?',
+					icon: 'question',
+					showCancelButton: true,
+					confirmButtonText: 'Sim',
+					cancelButtonText: 'Não'
+				}).then((result) => {
+					if (result.isConfirmed) {
+						Swal.fire({title:'Sucesso', icon:'success', text: 'Deslogado com sucesso', didClose: () => {
+							window.location.href = url;
+						}});
+					}
+				});
+			}else{
+				window.location.href = url;
+			}
+		}
+
+		(() => {
+			'use strict'
+
+			var linkAtivo = document.querySelector('a[href="' + window.location.pathname + '"]');
+			if (linkAtivo) {
+				linkAtivo.classList.add('active');
+			}
+
+			const forms = document.querySelectorAll('.needs-validation')
+
+			Array.from(forms).forEach(form => {
+				form.addEventListener('submit', event => {
+					if (!form.checkValidity()) {
+						event.preventDefault()
+						event.stopPropagation()
+					}
+
+					form.classList.add('was-validated')
+				}, false)
+			})
+		})()
+	</script>
+
+	{% block script %}{% endblock %}
+</body>
+</html>

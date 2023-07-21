@@ -1,5 +1,9 @@
+/bot/exe/bot/static/jsons/loja.json
+/bot/exe/bot/static/session.txt
+/bot/exe/app.log
+/bot/releases/
 
-/exe/bot/static/jsons/loja.json
-/exe/bot/static/session.txt
-/exe/app.log
-/releases/
+/manager/exe/manager/static/jsons/loja.json
+/manager/exe/manager/static/session.txt
+/manager/exe/manager.log
+/manager/releases/

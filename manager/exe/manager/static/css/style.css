@@ -1,0 +1,7 @@
+.no-focus, .no-focus:focus {
+	box-shadow: none !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
+	background-color: #0d6efd !important;
+}

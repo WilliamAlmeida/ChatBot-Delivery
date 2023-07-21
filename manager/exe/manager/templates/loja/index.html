@@ -1,0 +1,519 @@
+{% extends 'base.html' %}
+
+{% block title %}Loja{% endblock %}
+
+{% block header %}
+<h1 class="text-center py-2 bg-primary text-white rounded-bottom">Loja</h1>
+{% endblock %}
+
+{% block content %}
+
+<hr class="border-white">
+
+<button class="btn btn-primary" id="carregar-loja">Carregar Dados da Loja</button>
+<button class="btn btn-danger" id="sincronizar-loja">Sincronizar com ibox Delivery</button>
+<button class="btn btn-success" id="salvar-loja">Salvar Dados da Loja</button>
+
+<hr class="border-white">
+
+<nav>
+	<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+		<button class="nav-link active" id="nav-datas-tab" data-bs-toggle="tab" data-bs-target="#nav-datas" type="button" role="tab" aria-controls="nav-datas" aria-selected="true">Dados</button>
+		<button class="nav-link" id="nav-horarios-tab" data-bs-toggle="tab" data-bs-target="#nav-horarios" type="button" role="tab" aria-controls="nav-horarios" aria-selected="false">Horários</button>
+	</div>
+</nav>
+
+<div class="tab-content p-2 border border-top-0 rounded-bottom" id="nav-tabContent">
+	<div class="tab-pane fade show active" id="nav-datas" role="tabpanel" aria-labelledby="nav-datas-tab" tabindex="0">
+		<div class="row">
+			<div class="col-md-6 col-sm-12">
+				<div class="mb-3">
+					<label for="cpf" class="form-label fw-bold">CPF</label>
+					<input type="text" class="form-control cpf no-focus" id="cpf" name="cpf">
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-12">
+				<div class="mb-3">
+					<label for="cnpj" class="form-label fw-bold">CNPJ</label>
+					<input type="text" class="form-control cnpj no-focus" id="cnpj" name="cnpj" onchange="getCNPJ(this)">
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6 col-sm-12">
+				<div class="mb-3">
+					<label class="form-label fw-bold" for="nome_fantasia">Nome da Empresa <span class="required">*</span></label>
+					<input type="text" class="form-control no-focus" id="nome_fantasia" name="nome_fantasia" required="required" maxlength="40">
+				</div>
+			</div>
+			<div class="col-md-6 col-sm-12">
+				<div class="mb-3">
+					<label class="form-label fw-bold" for="razao_social">Razão Social</label>
+					<input type="text" class="form-control text-uppercase no-focus" id="razao_social" name="razao_social">
+				</div>
+			</div>
+		</div>
+
+		<div id="fields_address">
+			<div class="row">
+				<div class="col-md-4 col-sm-12">
+					<div class="mb-3">
+						<label class="form-label fw-bold" for="end_cep">CEP</label>
+						<div class="input-group">
+							<input type="text" id="end_cep" name="end_cep" class="form-control cep no-focus" placeholder="00.000-000">
+							<button class="btn btn-secondary" type="button" name="search_cep" disabled>Pesquisar</button>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6 col-sm-12">
+					<div class="mb-3">
+						<label class="form-label fw-bold" for="end_logradouro">Endereço</label>
+						<input type="text" id="end_logradouro" name="end_logradouro" class="form-control text-uppercase no-focus">
+					</div>
+				</div>
+				<div class="col-md-2 col-sm-12">
+					<div class="mb-3">
+						<label class="form-label fw-bold" for="end_numero">Nº</label>
+						<input type="text" id="end_numero" name="end_numero" class="form-control text-uppercase no-focus">
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-lg-5 col-md-6 col-sm-12">
+					<div class="mb-3">
+						<label class="form-label fw-bold" for="end_bairro">Bairro</label>
+						<input type="text" id="end_bairro" name="end_bairro" class="form-control text-uppercase no-focus">
+					</div>
+				</div>
+				<div class="col-lg-5 col-md-6 col-sm-12">
+					<div class="mb-3">
+						<label class="form-label fw-bold" for="end_cidade">Cidade</label>
+						<input type="text" id="end_cidade" name="end_cidade" class="form-control text-uppercase no-focus">
+					</div>
+				</div>
+				<div class="col-lg-2 col-md-3 col-sm-12">
+					<div class="mb-3">
+						<label class="form-label fw-bold" for="end_estado">Estado</label>
+						<input type="text" id="end_estado" name="end_estado" class="form-control text-uppercase no-focus" maxlength="2">
+					</div>
+				</div>
+				<div class="col-lg-5 col-md col-sm-12">
+					<div class="mb-3">
+						<label class="form-label fw-bold" for="end_complemento">Complemento</label>
+						<input type="text" id="end_complemento" name="end_complemento" class="form-control text-uppercase no-focus">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-12 col-sm-12">
+				<div class="mb-3">
+					<label for="description" class="form-label fw-bold">Breve Descrição</label>
+					<textarea class="form-control no-focus" id="description" name="description" maxlength="160" rows="4"></textarea>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12 col-md-6 col-lg-4">
+				<div class="mb-3">
+					<label class="form-label fw-bold" for="taxa_entrega">Sua menor taxa de entrega, quanto é?</label>
+					<div class="input-group">
+						<span class="input-group-text">R$</span>
+						<input type="text" class="form-control money-br no-focus" id="taxa_entrega" name="taxa_entrega" value="0" style="max-width: 200px;">
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-12 col-md-6 col-lg-4">
+				<div class="mb-3">
+					<label class="form-label fw-bold" for="couvert">Couvert Artístico</label>
+					<div class="input-group">
+						<span class="input-group-text">R$</span>
+						<input type="text" class="form-control money-br no-focus" id="couvert" name="couvert" value="0" style="max-width: 200px;">
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-sm-12 col-md-6 col-lg-4">
+				<div class="mb-3">
+					<label class="form-label fw-bold" for="valor_min_entrega">Valor mínimo para entregar um pedido</label>
+					<div class="input-group">
+						<span class="input-group-text">R$</span>
+						<input type="text" class="form-control money-br no-focus" id="valor_min_entrega" name="valor_min_entrega" value="0" style="max-width: 200px;">
+					</div>
+					<span class="text-danger fs-6"><small>Informe o valor minimo para poder efetuar entrega</small></span>
+				</div>
+			</div>
+			<div class="col-sm-12 col-md-6 col-lg-4">
+				<div class="mb-3">
+					<label class="form-label fw-bold" for="isento_taxa_entrega">Isentar Taxa de Entrega</label>
+					<div class="input-group">
+						<span class="input-group-text">R$</span>
+						<input type="text" class="form-control money-br no-focus" id="isento_taxa_entrega" name="isento_taxa_entrega" value="0" style="max-width: 200px;">
+					</div>
+					<span class="text-danger fs-6"><small>Pedidos acima do valor informado estaram isentos da taxa de entrega</small></span>
+				</div>
+			</div>
+			<div class="col-sm-12 col-md-12 col-lg-4">
+				<div class="mb-3">
+					<label class="form-label fw-bold" for="tempo_entrega">Tempo Médio De Entrega Do Produto</label>
+					<div class="row">
+						<div class="col-auto">
+							<div class="input-group">
+								<span class="input-group-text">Min</span>
+								<input type="text" class="form-control only-number no-focus" id="tempo_entrega_min" name="tempo_entrega_min" value="30" style="max-width: 100px;">
+							</div>
+						</div>
+						<div class="col-auto">
+							<div class="input-group">
+								<span class="input-group-text">Máx</span>
+								<input type="text" class="form-control only-number no-focus" id="tempo_entrega_max" name="tempo_entrega_max" value="60" style="max-width: 100px;">
+							</div>
+						</div>
+					</div>
+					<span class="text-danger fs-6"><small>Tempo médio deve ser informado em minutos (mínimo e máximo)</small></span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="tab-pane fade" id="nav-horarios" role="tabpanel" aria-labelledby="nav-horarios-tab" tabindex="0">
+		<div class="container">
+			<!-- <div class="row">
+				<div class="col-sm-10 col-lg-6 offset-lg-3 pb-2 pb-sm-0 text-center">
+					<div class="mb-3">
+						<label for="status_manual" class="form-label fw-bold fs-5">Abrir e fechar automaticamente?</label>
+
+						<div class="form-check form-switch ps-0">
+							<label class="form-check-label bg-danger text-white rounded-pill px-2 small" for="">Não</label>
+							<input class="form-check-input float-none ms-0" type="checkbox" role="switch" id="status_manual" name="status_manual">
+							<label class="form-check-label bg-success text-white rounded-pill px-2 small" for="">Sim</label>
+						</div>
+
+					</div>
+				</div>
+			</div> -->
+
+			<div class="row">
+				<div class="col-sm-10 col-lg-6 offset-lg-3 pb-2 pb-sm-0 text-center">
+					<span class="fw-bold fs-5">Qual é o(a) Horário de Funcionamento?</span>
+				</div>
+			</div>
+
+			{% for key, data in array_horarios %}
+			<div class="row">
+				<div class="col-sm-12 col-lg-6 offset-lg-3 border py-2 my-2">
+					<div class="row mb-2">
+						<div class="col-10 text-center">
+							<span class="align-middle fw-bold">{{ data }}</span>
+						</div>
+						<div class="col-2 text-end">
+							<button type="button" class="btn btn-sm btn-primary mx-2" name="nova_linha" style="width: 32px;" data-group="horarios_funcionamento_{{ key }}">
+								+
+							</button>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-12">
+							<table name="horarios_funcionamento_{{ key }}" class="table mb-0" count="0">
+								<tbody>
+									<tr class="border-top d-none">
+										<td class="border-bottom-0">
+											<div class="row">
+												<input type="hidden" data-name="dia" class="form-control" value="{{ key }}">
+												<div class="col-5 col-md-5 col-sm-5">
+													<label class="col-form-label" for="inicio">Inicio</label>
+													<input type="time" data-name="inicio" class="form-control no-focus" data-required="required">
+												</div>
+												<div class="col-5 col-md-5 col-sm-5">
+													<label class="col-form-label" for="fim">Término</label>
+													<input type="time" data-name="fim" class="form-control no-focus" data-required="required">
+												</div>
+												<div class="col-2 col-md-2 col-sm-2 text-end">
+													<label class="col-form-label d-block text-white">-</label>
+													<button type="button" class="btn btn-sm btn-danger mt-2" name="deleta_linha" style="width: 32px;">
+														-
+													</button>
+												</div>
+											</div>
+										</td>
+
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+	var jsonData = {};
+
+	function truncateMessage(message, size=50) {
+		return message.length > size ? message.substring(0, size) + '...' : message;
+	}
+
+	function populateForm() {
+		[
+			'#cpf','#cnpj','#nome_fantasia','#razao_social',
+			'#end_cep','#end_logradouro','#end_bairro','#end_numero',
+			'#end_estado','#end_cidade','#end_complemento', '#description',
+			'#taxa_entrega','#couvert','#valor_min_entrega', '#isento_taxa_entrega',
+			'#tempo_entrega_min','#tempo_entrega_max'
+		].forEach((key) => {
+			e = document.querySelector(key);
+
+			if (e) {
+				value = jsonData[key.replace('#','')];
+
+				e.value 	 = value ? value : null;
+
+				if(typeof(e) == 'select') {
+					e.dispatchEvent(new Event('change'));
+				}
+			}
+		});
+
+		document.getElementsByName('deleta_linha').forEach((e) => {
+			e.click();
+		});
+
+		if(jsonData.horarios) {
+			jsonData.horarios.forEach((value, index) => {
+				btn_nova_linha = document.querySelector('button[name=nova_linha][data-group="horarios_funcionamento_'+value.dia+'"]');
+				if(btn_nova_linha) {
+					btn_nova_linha.click();
+
+					let table = document.querySelector('table[name="horarios_funcionamento_'+value.dia+'"] tr:last-child'),
+						input_i = table.querySelector('input[name*=inicio]:not([hidden])'),
+						input_f = table.querySelector('input[name*=fim]');
+
+					input_i.value = value.inicio;
+					input_f.value = value.fim;
+				}
+			});
+		}
+	}
+
+	function editItems() {
+		[
+			'#cpf','#cnpj','#nome_fantasia','#razao_social',
+			'#end_cep','#end_logradouro','#end_bairro','#end_numero',
+			'#end_estado','#end_cidade','#end_complemento', '#description',
+			'#taxa_entrega','#couvert','#valor_min_entrega', '#isento_taxa_entrega',
+			'#tempo_entrega_min','#tempo_entrega_max'
+		].forEach((key) => {
+			e = document.querySelector(key);
+
+			if (e) {
+				jsonData[key.replace('#','')] = e.value;
+			}
+		});
+
+		if('slug' in jsonData && 'nome_fantasia' in jsonData) jsonData['slug'] = slugify(jsonData['nome_fantasia']);
+
+		jsonData.horarios = [];
+
+		if(jsonData.horarios) {
+			document.querySelectorAll('table[name^=horarios_funcionamento_]').forEach((table, index) => {
+				let dayWeek = table.getAttribute('name').replace('horarios_funcionamento_', '');
+
+				table.querySelectorAll('tbody tr:not(.d-none)').forEach((row, index_2) => {
+					model = {
+						dia: dayWeek,
+						fim: row.querySelector('input[name*=inicio]').value,
+						inicio: row.querySelector('input[name*=inicio]').value
+					}
+
+					jsonData.horarios.push(model);
+				});
+
+			});
+		}
+	}
+
+	function salvarArquivoJson() {
+		try {
+			editItems();
+
+			fetch('{{ url_for("loja.save") }}', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(jsonData)
+			})
+			.then(response => response.json())
+			.then(responseData => {
+				console.log('Resposta do servidor:', responseData);
+				if(responseData.status == 'success') {
+					Swal.fire({title:'Sucesso', icon:'success', text: responseData.message, didClose: () => {
+
+					}});
+				}else{
+					Swal.fire({title:'Falha', icon:'error', text: responseData.message});
+				}
+			}).catch(error => {
+				Swal.fire({title:'Falha ao atualizar o arquivo JSON', icon:'error', text: error});
+			});
+		} catch (error) {
+			Swal.fire({title:'Falha ao atualizar o arquivo JSON', icon:'error', text: error});
+		}
+	}
+
+	function carregarArquivoJson(silent=false) {
+		try {
+			fetch('/static/jsons/loja.json')
+			.then(response => response.json())
+			.then(data => {
+				data = JSON.parse(atob(data));
+				jsonData = data;
+				populateForm();
+				if(!silent)
+					Swal.fire({title:'Sucesso', icon:'success', text: 'Dados carregados com sucesso'});
+			})
+			.catch(error => {
+				console.error(error);
+			});
+		} catch (error) {
+			Swal.fire({title:'Falha ao atualizar o arquivo JSON', icon:'error', text: error});
+		}
+	}
+
+	function sincronizarDadosJson() {
+		try {
+			fetch('{{ url_for("loja.api_empresa") }}', {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json'
+				}
+			})
+			.then(response => response.json())
+			.then(responseData => {
+				console.log('Resposta do servidor:', responseData);
+				if(responseData.status == 'success') {
+					if(responseData.empresa) {
+						jsonData = responseData.empresa;
+						populateForm();
+						Swal.fire({title:'Sucesso', icon:'success', text: responseData.message, didClose: () => {
+							Swal.fire({title:'Aviso', icon:'info', text: 'Lembre-se de Salvar os Dados da Loja.'});
+						}});
+					}else{
+						Swal.fire({title:'Aviso', icon:'info', text: 'Nenhuma empresa encontrada.'});
+					}
+				}else{
+					Swal.fire({title:'Falha', icon:'error', text: responseData.message, didClose: () => {
+						if(responseData.code && responseData.code == -1) {
+							window.location.href = '{{ url_for("auth.logout") }}';
+						}
+					}});
+				}
+			}).catch(error => {
+				Swal.fire({title:'Falha ao atualizar o arquivo JSON', icon:'error', text: error});
+			});
+		} catch (error) {
+			Swal.fire({title:'Falha ao atualizar o arquivo JSON', icon:'error', text: error});
+		}
+	}
+
+	document.getElementById('sincronizar-loja').addEventListener('click', function(){
+		Swal.fire({
+			title: 'Deseja sincronizar?',
+			text: 'Você deseja sincronizar os dados da loja com ibox Delivery?',
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonText: 'Sincronizar',
+			cancelButtonText: 'Cancelar'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				sincronizarDadosJson();
+			}
+		});
+	});
+
+	document.getElementById('carregar-loja').addEventListener('click', function(){
+		Swal.fire({
+			title: 'Deseja carregar?',
+			text: 'Você deseja carregar os dados da loja?',
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonText: 'Carregar',
+			cancelButtonText: 'Cancelar'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				carregarArquivoJson();
+			}
+		});
+	});
+
+	document.getElementById('salvar-loja').addEventListener('click', function(){
+		Swal.fire({
+			title: 'Deseja salvar?',
+			text: 'Você deseja salvar os dados da loja?',
+			icon: 'question',
+			showCancelButton: true,
+			confirmButtonText: 'Salvar',
+			cancelButtonText: 'Cancelar'
+		}).then((result) => {
+			if (result.isConfirmed) {
+				salvarArquivoJson();
+			}
+		});
+	});
+
+	window.addEventListener('pywebviewready', function() {
+		const Toast = Swal.mixin({
+			toast: true,
+			position: 'top-end',
+			showConfirmButton: false,
+			timer: 1000,
+			timerProgressBar: true,
+			didOpen: (toast) => {
+						// toast.addEventListener('mouseenter', Swal.stopTimer)
+						// toast.addEventListener('mouseleave', Swal.resumeTimer)
+					}
+				});
+
+		Toast.fire({
+			icon: 'success',
+			title: 'pywebview is ready'
+		});
+
+		carregarArquivoJson(true);
+	});
+
+	window.addEventListener('load', function() {
+		const Toast = Swal.mixin({
+			toast: true,
+			position: 'top-end',
+			showConfirmButton: false,
+			timer: 1000,
+			timerProgressBar: true,
+			didOpen: (toast) => {
+						// toast.addEventListener('mouseenter', Swal.stopTimer)
+						// toast.addEventListener('mouseleave', Swal.resumeTimer)
+					}
+				});
+
+		Toast.fire({
+			icon: 'success',
+			title: 'load is ready'
+		});
+
+		carregarArquivoJson(true);
+	});
+</script>
+{% endblock %}

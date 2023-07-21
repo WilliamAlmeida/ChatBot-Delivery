@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Início{% endblock %}
+
+{% block header %}
+<h1 class="text-center py-2 bg-primary text-white rounded-bottom">{{ config.APP_NAME }}</h1>
+{% endblock %}
+
+{% block content %}
+<hr class="border-white my-1">
+
+{% if g.user == None %}
+<div class="row">
+	<div class="col-12 col-sm-6 offset-sm-3">
+		<nav>
+			<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+				<button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login" type="button" role="tab" aria-controls="nav-login" aria-selected="true">Entrar</button>
+			</div>
+		</nav>
+		<div class="tab-content p-2 border border-top-0 rounded-bottom" id="nav-tabContent">
+			<div class="tab-pane fade show active" id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab" tabindex="0">
+
+				<form id="login-form" class="needs-validation" novalidate>
+					<div class="mb-3">
+						<label for="username" class="form-label">E-mail:</label>
+						<input type="email" class="form-control bg-light no-focus" name="username" placeholder="exemplo@exemplo.com" value="" required>
+						<div class="invalid-feedback">
+							Informe seu e-mail.
+						</div>
+					</div>
+					<div class="mb-3">
+						<label for="password" class="form-label">Senha:</label>
+						<input type="password" class="form-control bg-light no-focus" name="password" value="" required>
+						<div class="invalid-feedback">
+							Senha não informada.
+						</div>
+					</div>
+					<div class="mb-1">
+						<button type="submit" class="btn btn-success" style="width: 100px;">Logar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block script %}
+<script type="text/javascript">
+	if(document.getElementById('login-form')) {
+		function login(email, password) {
+
+			const form = document.getElementById('login-form');
+			var button_submit = null;
+
+			if(form) {
+				button_submit = form.querySelector('button[type=submit]');
+				button_submit.disabled = true;
+			}
+
+			try {
+				const formData = new FormData();
+				formData.append('username', email);
+				formData.append('password', password);
+
+				fetch('{{ url_for("auth.login") }}', {
+					method: 'POST',
+					body: formData
+				})
+				.then(response => response.json())
+				.then(responseData => {
+					console.log('Resposta do servidor:', responseData);
+					if(button_submit) button_submit.disabled = false;
+
+					if(responseData.status == 'success') {
+						Swal.fire({title:'Sucesso', icon:'success', text: responseData.message, didClose: () => {
+							window.location = '{{ url_for("index") }}'
+						}});
+					}else{
+						Swal.fire({title:'Falha', icon:'error', text: responseData.message});
+					}
+				}).catch(error => {
+					Swal.fire({title:'Falha ao efetuar login', icon:'error', text: error});
+					if(button_submit) button_submit.disabled = false;
+				});
+			} catch (error) {
+				Swal.fire({title:'Falha ao efetuar login', icon:'error', text: error});
+				if(button_submit) button_submit.disabled = false;
+			}
+		}
+
+		document.getElementById('login-form').addEventListener('submit', function(e){
+			e.preventDefault();
+
+			const loginEmail = e.target.querySelector('[name=username]');
+			const loginPassword = e.target.querySelector('[name=password]');
+			const email = loginEmail.value.trim().toLowerCase();
+
+			if(!email.length) {
+				return
+			}
+			if(!loginPassword.value.length) {
+				return
+			}
+
+			Swal.fire({
+				title: 'Deseja logar?',
+				text: 'Você deseja efetuar o login em sua conta?',
+				icon: 'question',
+				showCancelButton: true,
+				confirmButtonText: 'Sim',
+				cancelButtonText: 'Não'
+			}).then((result) => {
+				if (result.isConfirmed) {
+					login(email, loginPassword.value);
+				}
+			});
+		});
+	}
+</script>
+{% endblock %}
