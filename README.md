@@ -23,7 +23,7 @@ Atualmente, o Chatbot Delivery está em processo de pré-release. Isso significa
 1. Clone este repositório em sua máquina local:
 
 ```
-git clone https://github.com/seu-usuario/chatbot-delivery.git
+git clone https://github.com/williamalmeida/chatbot-delivery.git
 ```
 
 2. Siga as instruções contidas na documentação para configurar o ambiente e as dependências necessárias.
@@ -31,7 +31,7 @@ git clone https://github.com/seu-usuario/chatbot-delivery.git
 3. Execute o Chatbot Delivery em sua máquina:
 
 ```
-python chatbot_delivery.py
+bot\ChatBot Delivery.exe
 ```
 
 4. Agora o Chatbot Delivery estará pronto para automatizar suas respostas no WhatsApp!
