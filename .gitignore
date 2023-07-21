@@ -7,3 +7,5 @@
 /manager/exe/manager/static/session.txt
 /manager/exe/manager.log
 /manager/releases/
+
+/auto_update/
