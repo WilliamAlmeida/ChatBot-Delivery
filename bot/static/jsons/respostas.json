@@ -1,0 +1,107 @@
+{
+    "ainda_nao_abrimos": [
+        "No momento, ainda não abrimos as portas, mas estamos ansiosos para atendê-lo em breve! ⏳✨"
+    ],
+    "bem_vindo": [
+        "Bem-vindo à {nome_fantasia}! ❤️ Como posso ajudar? 😉",
+        "Bem-vindo à {nome_fantasia}! 🎉 Como posso auxiliá-lo(a) hoje? 💬😊",
+        "Olá e seja bem-vindo(a) à {nome_fantasia}! 🌟 Estou aqui para auxiliá-lo(a). Como posso ser útil? 😊"
+    ],
+    "encerramento_atendimento": [
+        " 👋🏻 Tudo bem, até mais 👋🏻"
+    ],
+    "horario_funcionamento": [
+        "Aqui estão os horários de funcionamento do nosso estabelecimento:\n\n{horarios}"
+    ],
+    "horario_nao_registrado": [
+        "Desculpe, mas nenhum horário de funcionamento foi cadastrado."
+    ],
+    "link_app": [
+        "Top! Peça por aqui > https://ibox.delivery/{slug}\n\n É bem fácil e seu cadastro já fica salvo para quando for pedir novamente!"
+    ],
+    "link_cardapio": [
+        "Link do Cardápio > https://ibox.delivery/{slug}?categorias"
+    ],
+    "taxa_entrega": [
+        "Nossas taxas de entrega variam de acordo com a localização para garantir um serviço eficiente e viável."
+    ],
+    "localizacao": [
+        "O endereço é {end_logradouro}, {end_numero}, {end_bairro}, {end_cidade}, {end_estado}. 🏠🌟📍",
+        "Estamos situados na {end_logradouro}, no número {end_numero}, no bairro {end_bairro}, em {end_cidade}, no estado de {end_estado}. 🗺️📌"
+    ],
+    "menu": [
+        "Envie 1, 2, 3 ou 4 para...\n\n[ 1 ] - 📝 Quero Pedir! 📝 \n[ 2 ] - 🍽️ Ver o Cardápio 🍽️ \n[ 3 ] - ⏰ Horário de Funcionamento ⏰\n[ 5 ] - 🗺️ Endereço 📌\n[ 4 ] - 🤷 Não quero NADA! 😓 e quer sair, digite 4 ou SAIR."
+    ],
+    "menu_erro": [
+        "Poxa! Não consegui entender, faz o seguinte: Envie 1, 2, 3 ou 4 para...\n[ 1 ] - 📝 Quero Pedir! 📝\n[ 2 ] - 🍽️ Ver o Cardápio 🍽️\n[ 3 ] - ⏰ Horário de funcionamento ⏰\n[ 5 ] - 🗺️ Endereço 📌\n[ 4 ] - 🤷 Não quero NADA! 😓 e quer sair, digite 4 ou SAIR."
+    ],
+    "nao_entendi": [
+        "Desculpe, não entendi 🤷 o que você queria dizer."
+    ],
+    "sim_pedir": [
+        " 🙋🏼‍♀️ Opa! Sim, como posso ajudar? 😉",
+        "Claro, pode me dizer o que deseja."
+    ],
+    "alerta_ausencia": [
+        "TOC TOC   Olá, você ainda está aí? :-)"
+    ],
+    "alerta_encerramento_atendimento": [
+        "Seu atendimento esta sendo finalizado por falta de comunicação."
+    ],
+    "audio_nao_permitido": [
+        "Desculpe, mas não respondemos áudio no momento."
+    ],
+    "resposta_ao_agradecimento": [
+        "De nada. 😉"
+    ],
+
+    "_usuario_nao_registrado": [
+        "Cadastre-se na plataforma para poder usar esta ação. 😉\nhttps://ibox.delivery/delivery"
+    ],
+    "_erro_conexao_servidor": [
+        "Falha ao tentar se conectar ao servidor."
+    ],
+    "_pergunta_codigo_pedido": [
+        "Informe o código do seu pedido?\nEle começa com *#* exemplo *#123*, precisa informar ele todo."
+    ],
+    "_consultando_pedido": [
+        "Consultando pedido *#{codigo_pedido}*."
+    ],
+    "_aguardando_consulta": [
+        "Por favor, aguarde retorno da consulta do pedido *#{codigo_pedido}*."
+    ],
+    "_limite_tentativas": [
+        "Limite de tentativas atingido, para consultar novamente, digite *Consultar Pedido Novamente*."
+    ],
+    "_codigo_nao_compreendio": [
+        "Desculpe não entendi, o código do pedido, poderia digitar novamente."
+    ],
+    "_pedido_nao_encontrado": [
+        "O pedido *#{codigo_pedido}* não encontrado."
+    ],
+    "_pedido_encontrado_status": [
+        "O pedido *#{codigo_pedido}* consta como *{status_pedido}*."
+    ],
+    "_pedido_nao_lhe_pertence": [
+        "O pedido *#{codigo_pedido}* não pertence ao seu número."
+    ],
+
+    "_sugerindo_feedback_reclamacao": [
+        "Deseja fazer dar um *Feedback* ou Realizar uma *Reclamação*?"
+    ],
+    "_solicitando_feedback": [
+        "Digite seu feedback, por favor"
+    ],
+    "_solicitando_reclamacao": [
+        "Qual seria a reclamação?"
+    ],
+    "_cancelou_feedback_reclamacao": [
+        "Queremos ouvir você! Compartilhe seu feedback ou reclamação e nos ajude a melhorar."
+    ],
+    "_agradecendo_feedback": [
+        "Agradecemos seu feedback. Valorizamos sua opinião."
+    ],
+    "_agradecendo_reclamacao": [
+        "Obrigado por nos informar. Estamos trabalhando para resolver isso."
+    ]
+}
